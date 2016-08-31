@@ -1,5 +1,5 @@
 require 'stringio'
-require_relative '../recipe_cli.rb'
+require_relative '../lib/recipe_cli.rb'
 
 describe Recipe do
 
