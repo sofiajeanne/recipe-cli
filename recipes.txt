@@ -1,8 +1,0 @@
-,
-Ingredients
-	*,
-
-Instructions:
-sd
-
------
