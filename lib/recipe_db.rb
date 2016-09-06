@@ -14,7 +14,7 @@ require 'sqlite3'
 # DB.execute "INSERT INTO recipe VALUES(1, 'Korean Cucumber Salad')"
 
 
-DB = SQLite3::Database.open (File.expand_path(__FILE__) + "/recipes.sqlite")
+DB = SQLite3::Database.open (File.expand_path('../recipes.sqlite', __FILE__))
 
 class Recipe
 
@@ -24,38 +24,63 @@ class Recipe
     @recipe_name = recipe_name
   end
 
+  def recipe_ingredients
+    @ingredients = []
+    loop do
+      puts "Enter all ingredients, then type 'done'"
+      ingredient = $stdin.gets.chomp
+      @ingredients << ingredient
+      break if ingredient == "done"
+    end
+    @ingredients.pop
+    @ingredients.map! {|ingredient| ingredient.split}
+    array.map do |element|
+      full_ing = element[2].concat(" #{element[3]}")
+      element.pop
+    end
+  end
+
+    @ingredients
+  end
+
   def recipe_instructions
     puts "Enter instructions"
     instructions = $stdin.gets.chomp
     @instructions = instructions
   end
 
-  def add_to_db
-    DB.execute "INSERT INTO recipes(recipe_name, instructions) VALUES('#{@recipe_name}', '#{@instructions}')"
+  def add_recipe
+    DB.execute "INSERT INTO recipes(recipe_id, recipe_name, instructions) VALUES(NULL, '#{@recipe_name}', '#{@instructions}')"
   end
 
+  def add_ingredients
+    @ingredients.each do |ingredient|
+      DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, '#{ingredient[2]}')"
+    end
+  end
+
+  def add_rels
+  end
+
+  end
   def run
     recipe_name
+    recipe_ingredients
     recipe_instructions
-    add_to_db
+    add_recipe
+    add_ingredients
   end
 
 end
 
-Recipe.new.run
-
 =begin
-open recipes table
-  insert recipe id
-  recipe_name
-  instructions
 
 open ingredients table
-iterate over array to check if ingredient exists in db
-return ingredients with matching words as potential matches
-  if there's a match, take ingredient_id
+**iterate over array to check if ingredient exists in db
+**return ingredients with matching words as potential matches
+**  if there's a match, take ingredient_id
   elsif none match, insert 
-    ingredient id
+    ingredient id (NULL)
     ingredient_name
 
 open recipe_ing_rel table
