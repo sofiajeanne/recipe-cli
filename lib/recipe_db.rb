@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sqlite3'
 
+# INITIALIZERS
 # DBNAME = "recipes.sqlite"
 # File.delete(DBNAME) if File.exists?DBNAME
 
@@ -21,7 +22,8 @@ class Recipe
   def recipe_name
     puts "Enter recipe name"
     recipe_name = $stdin.gets.chomp
-    @recipe_name = recipe_name
+    @recipe_name = recipe_name.to_s
+    puts @recipe_name.class
   end
 
   def recipe_ingredients
@@ -38,9 +40,6 @@ class Recipe
       full_ing = element[2].concat(" #{element[3]}")
       element.pop
     end
-  end
-
-    @ingredients
   end
 
   def recipe_instructions
@@ -60,9 +59,17 @@ class Recipe
   end
 
   def add_rels
+    @recipe_id = DB.execute "SELECT recipe_id FROM recipes WHERE recipe_name='#{@recipe_name}'"
+    @ingredients.each do |ingredient|
+      @ing_id = DB.execute "SELECT ing_id FROM ingredients WHERE ing='#{ingredient[2]}'"
+      DB.execute "INSERT INTO recipe_rel (recipe_id, ing_id, amount, unit) VALUES('#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', '#{ingredient[0]}', '#{ingredient[1]}')"
+    end
   end
 
+  def display_recipe
+  
   end
+  
   def run
     recipe_name
     recipe_ingredients
@@ -74,7 +81,6 @@ class Recipe
 end
 
 =begin
-
 open ingredients table
 **iterate over array to check if ingredient exists in db
 **return ingredients with matching words as potential matches
@@ -82,11 +88,4 @@ open ingredients table
   elsif none match, insert 
     ingredient id (NULL)
     ingredient_name
-
-open recipe_ing_rel table
-for each ingredient insert
-  recipe id (matched to recipe_name)
-  ingredient id (matched to ing)
-  amount
-  unit
 =end

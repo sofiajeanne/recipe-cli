@@ -3,4 +3,5 @@ require 'rubygems'
 require 'sqlite3'
 require_relative '../lib/recipe_db.rb'
 
-Recipe.new.run
+recipe1 = Recipe.new
+recipe1.recipe_name
