@@ -9,7 +9,7 @@ require 'sqlite3'
 # DB = "recipes.sqlite"
 # DB.execute("CREATE TABLE recipe(recipe_id INTEGER PRIMARY KEY, recipe_name TEXT, instructions TEXT)")
 # DB.execute("CREATE TABLE ingredients(ing_id INTEGER PRIMARY KEY, ing TEXT)")
-# DB.execute("CREATE TABLE recipe_ing_rel(recipe_id INT, ing_id INT, amount REAL, unit TEXT)")
+# DB.execute("CREATE TABLE recipe_rel(row_id INTEGER PRIMARY KEY, recipe_id INT, ing_id INT, amount TEXT, unit TEXT)")
 
 # DB = SQLite3::Database.open "recipes.sqlite"
 # DB.execute "INSERT INTO recipe VALUES(1, 'Korean Cucumber Salad')"
@@ -17,7 +17,7 @@ require 'sqlite3'
 
 DB = SQLite3::Database.open (File.expand_path('../recipes.sqlite', __FILE__))
 
-class Recipe
+class AddRecipe
 
   def recipe_name
     puts "Enter recipe name"
@@ -36,9 +36,13 @@ class Recipe
     end
     @ingredients.pop
     @ingredients.map! {|ingredient| ingredient.split}
-    array.map do |element|
-      full_ing = element[2].concat(" #{element[3]}")
-      element.pop
+    @ingredients.each do |element|
+      if element.size == 4
+        element[2].concat(" #{element[3]}")
+        element.pop
+      elsif element.size == 5
+        element[2].concat(" #{element[3]}").concat(" #{element[4]}")
+        element.pop(2)
     end
   end
 
@@ -65,10 +69,6 @@ class Recipe
       DB.execute "INSERT INTO recipe_rel (recipe_id, ing_id, amount, unit) VALUES('#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', '#{ingredient[0]}', '#{ingredient[1]}')"
     end
   end
-
-  def display_recipe
-  
-  end
   
   def run
     recipe_name
@@ -79,6 +79,15 @@ class Recipe
   end
 
 end
+
+class GetRecipe
+
+  def display_recipe(recipe_name)
+    DB.execute "SELECT"
+  end
+
+end
+
 
 =begin
 open ingredients table
