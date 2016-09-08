@@ -56,8 +56,26 @@ class AddRecipe
   end
 
   def add_ingredients
-    @ingredients.each do |ingredient|
-      DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, '#{ingredient[2]}')"
+    @existing = []
+    @ingredient_list = []
+    @ingredients.each do |ing|
+      @ingredient_list << ing[2]
+    end
+    @ingredient_list.each do |ing|
+      ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing='#{ing}'"
+      @existing << ingredient
+    end
+    @existing.each do |ing|
+      if ing == []
+        @existing.delete(ing)
+      end
+    end
+    @existing.map! do |x|
+      x[0][0]
+    end
+    @to_add = @ingredient_list - @existing
+    @to_add.each do |ingredient|
+      DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, '#{ingredient}')"
     end
   end
 
@@ -79,7 +97,7 @@ class AddRecipe
   end
 end
 
-=begin
+
 class GetRecipe
 
   def get_recipe_input
@@ -134,7 +152,7 @@ class GetRecipe
   end
 
 end
-=end
+
 =begin
 open ingredients table
 **iterate over array to check if ingredient exists in db

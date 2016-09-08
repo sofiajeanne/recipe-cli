@@ -4,26 +4,32 @@ require 'sqlite3'
 
 DB = SQLite3::Database.open (File.expand_path('../recipes.sqlite', __FILE__))
 
-def recipe_ingredients
-=begin
-  @ingredients = []
-  loop do
-    puts "Enter all ingredients, then type 'done'"
-    ingredient = $stdin.gets.chomp
-    @ingredients << ingredient
-    if ingredient == "done"
-      break
+
+@ingredients = [["1", "x", "egg"], ["3", "tsp", "sugar"], ["6", "cups", "apples"], ["4", "tbsp", "curry"]]
+
+def add_ingredients
+  @existing = []
+  @ingredient_list = []
+  @ingredients.each do |ing|
+    @ingredient_list << ing[2]
+  end
+  @ingredient_list.each do |ing|
+    ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing='#{ing}'"
+    @existing << ingredient
+  end
+  @existing.each do |ing|
+    if ing == []
+      @existing.delete(ing)
     end
   end
-  @ingredients.pop
-  @ingredients.map! {|ingredient| ingredient.split}
-=end
-  @ingredients.each do |element|
-    if element.size == 4
-      element[2].concat(" #{element[3]}")
-      element.pop
-    elsif element.size == 5
-      element[2].concat(" #{element[3]}").concat(" #{element[4]}")
-      element.pop(2)
+  @existing.map! do |x|
+    x[0][0]
+  end
+  #in progress
+  @to_add = @ingredient_list - @existing
+  @to_add.each do |ingredient|
+    DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, '#{ingredient}')"
   end
 end
+
+add_ingredients
