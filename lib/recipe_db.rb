@@ -22,8 +22,7 @@ class AddRecipe
   def recipe_name
     puts "Enter recipe name"
     recipe_name = $stdin.gets.chomp
-    @recipe_name = recipe_name.to_s
-    puts @recipe_name.class
+    @recipe_name = recipe_name
   end
 
   def recipe_ingredients
