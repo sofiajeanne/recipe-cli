@@ -41,6 +41,7 @@ class AddRecipe
       elsif element.size == 5
         element[2].concat(" #{element[3]}").concat(" #{element[4]}")
         element.pop(2)
+      end
     end
   end
 
@@ -76,16 +77,14 @@ class AddRecipe
     add_ingredients
     add_rels
   end
-
 end
 
-
+=begin
 class GetRecipe
 
   def get_recipe_input
     puts "Please enter the recipe you're looking for"
     @recipe_name = $stdin.gets.chomp
-    #@recipe_name = "Korean Cucumber Salad"
   end
 
   def get_recipe_id
@@ -135,7 +134,7 @@ class GetRecipe
   end
 
 end
-
+=end
 =begin
 open ingredients table
 **iterate over array to check if ingredient exists in db
