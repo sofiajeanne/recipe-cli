@@ -138,14 +138,14 @@ class GetRecipe
     end
   end
 
-  def fetch_recipe
+  def fetch
     get_recipe_input
     get_recipe_id
     get_instructions
     get_ingredients
   end
 
-  def display_recipe
+  def display
     puts @recipe_name
     puts @ingredient_list
     puts @instructions
