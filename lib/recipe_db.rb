@@ -83,7 +83,7 @@ class AddRecipe
     @recipe_id = DB.execute "SELECT recipe_id FROM recipes WHERE recipe_name='#{@recipe_name}'"
     @ingredients.each do |ingredient|
       @ing_id = DB.execute "SELECT ing_id FROM ingredients WHERE ing='#{ingredient[2]}'"
-      DB.execute "INSERT INTO recipe_rel (recipe_id, ing_id, amount, unit) VALUES('#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', '#{ingredient[0]}', '#{ingredient[1]}')"
+      DB.execute "INSERT INTO recipe_rel (row_id, recipe_id, ing_id, amount, unit) VALUES(NULL, '#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', '#{ingredient[0]}', '#{ingredient[1]}')"
     end
   end
   
@@ -149,6 +149,31 @@ class GetRecipe
     puts @recipe_name
     puts @ingredient_list
     puts @instructions
+  end
+
+end
+
+class Access
+
+  def self.index
+    DB.execute "SELECT recipe_name FROM recipes"
+  end
+
+  def self.alphabetical_index
+    @recipes = DB.execute "SELECT recipe_name FROM recipes"
+    puts @recipes.flatten.sort
+  end
+
+  def self.recipes_including(ingredient)
+    @ing_id = DB.execute "SELECT ing_id from ingredients WHERE ing='#{ingredient}'"
+    @ing_id = @ing_id.join("")
+    @recipe_ids = DB.execute "SELECT recipe_id FROM recipe_rel where ing_id=#{@ing_id}"
+    @recipes = []
+    @recipe_ids.flatten.map do |id|
+      recipe = DB.execute "SELECT recipe_name FROM recipes WHERE recipe_id=#{id}"
+      @recipes << recipe
+    end
+    puts @recipes.sort
   end
 
 end
