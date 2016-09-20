@@ -4,28 +4,26 @@ require 'sqlite3'
 
 DB = SQLite3::Database.open (File.expand_path('../recipes.sqlite', __FILE__))
 
-class AddRecipe
+@recipe_id = 5
 
-  #def recipe_instructions
-  #  puts "Enter instructions"
-  #  instructions = $stdin.gets.chomp
-  #  @instructions = instructions
-  #end
-
-#lesson: you can have apostrophes within your instructions. because 
-  def add_recipe
-    @instructions = "Combine dry ingredients and any add-ins you'd like. Mix in water until well combined. Let rest 12 to 18 hours. Once proofed, fold out onto a floured board and fold over itself a few times. Let rest 15 minutes, then shape into a boule and place seam down to rise for 1 to 2 hours, until dough does not spring back readily when poked. Preheat oven at 450 for 30 minutes with pot inside. Bake for 30 minutes covered, then 15 minutes uncovered. Let cool(really)."
-
-    DB.execute "INSERT INTO recipes(recipe_id, recipe_name, instructions) VALUES(NULL, 'x', \"#{@instructions}\")"
+def get_ingredients
+  @ingredient_id = DB.execute "SELECT ing_id FROM recipe_rel WHERE recipe_id=#{@recipe_id}"
+  @ingredient_id.flatten!
+  @ingredient_names = []
+  @ingredient_id.each do |id|
+    ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing_id=#{id}"
+    @ingredient_names << ingredient
   end
-
-  def run
-    #recipe_instructions
-    add_recipe
+  @ingredient_names.flatten!
+  @ing_hash = Hash[@ingredient_id.zip @ingredient_names]
+  @ingredient_list = DB.execute "SELECT ing_id, amount, unit FROM recipe_rel WHERE recipe_id=#{@recipe_id}"
+  @ingredient_list.each do |ing|
+    ing[0] = @ing_hash[ing[0]]
+    ing.rotate!
   end
-  
+  @ingredient_list.map! do |ing|
+    ing.join(" ")
+  end
 end
 
-add = AddRecipe.new
-add.run
-
+puts get_ingredients

@@ -117,17 +117,13 @@ class GetRecipe
 
   def get_ingredients
     @ingredient_id = DB.execute "SELECT ing_id FROM recipe_rel WHERE recipe_id=#{@recipe_id}"
-    @ingredient_id.map! do |ing|
-      ing[0]
-    end
+    @ingredient_id.flatten!
     @ingredient_names = []
     @ingredient_id.each do |id|
       ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing_id=#{id}"
       @ingredient_names << ingredient
     end
-    @ingredient_names.map! do |ing|
-      ing[0][0]
-    end
+    @ingredient_names.flatten!
     @ing_hash = Hash[@ingredient_id.zip @ingredient_names]
     @ingredient_list = DB.execute "SELECT ing_id, amount, unit FROM recipe_rel WHERE recipe_id=#{@recipe_id}"
     @ingredient_list.each do |ing|
