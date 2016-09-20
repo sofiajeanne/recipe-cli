@@ -3,13 +3,9 @@ require 'rubygems'
 require 'sqlite3'
 require_relative '../lib/recipe_db.rb'
 
-=begin
 add = AddRecipe.new
 add.run
 
 get = GetRecipe.new
 get.fetch
 get.display
-=end
-
-Access.recipes_including("salt")

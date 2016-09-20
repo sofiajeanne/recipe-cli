@@ -52,7 +52,7 @@ class AddRecipe
   end
 
   def add_recipe
-    DB.execute "INSERT INTO recipes(recipe_id, recipe_name, instructions) VALUES(NULL, '#{@recipe_name}', '#{@instructions}')"
+    DB.execute "INSERT INTO recipes(recipe_id, recipe_name, instructions) VALUES(NULL, \"#{@recipe_name}\", \"#{@instructions}\")"
   end
 
   def add_ingredients
@@ -62,7 +62,7 @@ class AddRecipe
       @ingredient_list << ing[2]
     end
     @ingredient_list.each do |ing|
-      ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing='#{ing}'"
+      ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing=\"#{ing}\""
       @existing << ingredient
     end
     @existing.each do |ing|
@@ -75,7 +75,7 @@ class AddRecipe
     end
     @to_add = @ingredient_list - @existing
     @to_add.each do |ingredient|
-      DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, '#{ingredient}')"
+      DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, \"#{ingredient}\")"
     end
   end
 
@@ -83,7 +83,7 @@ class AddRecipe
     @recipe_id = DB.execute "SELECT recipe_id FROM recipes WHERE recipe_name='#{@recipe_name}'"
     @ingredients.each do |ingredient|
       @ing_id = DB.execute "SELECT ing_id FROM ingredients WHERE ing='#{ingredient[2]}'"
-      DB.execute "INSERT INTO recipe_rel (row_id, recipe_id, ing_id, amount, unit) VALUES(NULL, '#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', '#{ingredient[0]}', '#{ingredient[1]}')"
+      DB.execute "INSERT INTO recipe_rel (row_id, recipe_id, ing_id, amount, unit) VALUES(NULL, '#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', \"#{ingredient[0]}\", \"#{ingredient[1]}\")"
     end
   end
   
@@ -95,6 +95,7 @@ class AddRecipe
     add_ingredients
     add_rels
   end
+
 end
 
 
@@ -106,12 +107,12 @@ class GetRecipe
   end
 
   def get_recipe_id
-    @recipe_id = DB.execute "SELECT recipe_id FROM recipes WHERE recipe_name='#{@recipe_name}'"
+    @recipe_id = DB.execute "SELECT recipe_id FROM recipes WHERE recipe_name=\"#{@recipe_name}\""
     @recipe_id = @recipe_id[0][0]
   end
 
   def get_instructions
-    @instructions = DB.execute "SELECT instructions FROM recipes WHERE recipe_name='#{@recipe_name}'"
+    @instructions = DB.execute "SELECT instructions FROM recipes WHERE recipe_name=\"#{@recipe_name}\""
   end
 
   def get_ingredients
@@ -165,7 +166,7 @@ class Access
   end
 
   def self.recipes_including(ingredient)
-    @ing_id = DB.execute "SELECT ing_id from ingredients WHERE ing='#{ingredient}'"
+    @ing_id = DB.execute "SELECT ing_id from ingredients WHERE ing=\"#{ingredient}\""
     @ing_id = @ing_id.join("")
     @recipe_ids = DB.execute "SELECT recipe_id FROM recipe_rel where ing_id=#{@ing_id}"
     @recipes = []
