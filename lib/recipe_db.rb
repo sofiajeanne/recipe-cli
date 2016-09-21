@@ -55,35 +55,47 @@ class AddRecipe
     DB.execute "INSERT INTO recipes(recipe_id, recipe_name, instructions) VALUES(NULL, \"#{@recipe_name}\", \"#{@instructions}\")"
   end
 
-  def add_ingredients
-    @existing = []
+  #new method to prevent similar ingredients from being unintentionally added
+  def update_ingredients
     @ingredient_list = []
     @ingredients.each do |ing|
       @ingredient_list << ing[2]
     end
+    # remove already existing ingredients
+    @existing = []
     @ingredient_list.each do |ing|
       ingredient = DB.execute "SELECT ing FROM ingredients WHERE ing=\"#{ing}\""
       @existing << ingredient
     end
-    @existing.each do |ing|
-      if ing == []
-        @existing.delete(ing)
+    @existing.flatten!
+    @new_ings = @ingredient_list - @existing
+    # sub potentially matching ingredients with pre-existing, if they actually match
+    @new_ings.each_with_index do |ing, i|
+      @similar = DB.execute "SELECT ing FROM ingredients WHERE ing LIKE \"%#{ing}%\""
+      @similar.flatten!
+      unless @similar.empty?
+        puts "We found these matching ingredients: #{@similar}. To keep the original, press n. To use one of these, type it in below."
+        input = $stdin.gets.chomp
+        unless input == "n"
+          @new_ings[i] = input
+        end
       end
     end
-    @existing.map! do |x|
-      x[0][0]
-    end
-    @to_add = @ingredient_list - @existing
-    @to_add.each do |ingredient|
+  end
+
+  def add_ingredients
+    @new_ings.each do |ingredient|
       DB.execute "INSERT INTO ingredients(ing_id, ing) VALUES(NULL, \"#{ingredient}\")"
     end
   end
 
   def add_rels
     @recipe_id = DB.execute "SELECT recipe_id FROM recipes WHERE recipe_name='#{@recipe_name}'"
+    @recipe_id.flatten!
     @ingredients.each do |ingredient|
       @ing_id = DB.execute "SELECT ing_id FROM ingredients WHERE ing='#{ingredient[2]}'"
-      DB.execute "INSERT INTO recipe_rel (row_id, recipe_id, ing_id, amount, unit) VALUES(NULL, '#{@recipe_id[0][0]}', '#{@ing_id[0][0]}', \"#{ingredient[0]}\", \"#{ingredient[1]}\")"
+      @ing_id.flatten!
+      DB.execute "INSERT INTO recipe_rel (row_id, recipe_id, ing_id, amount, unit) VALUES(NULL, '#{@recipe_id[0]}', '#{@ing_id[0]}', \"#{ingredient[0]}\", \"#{ingredient[1]}\")"
     end
   end
   
@@ -92,6 +104,7 @@ class AddRecipe
     recipe_ingredients
     recipe_instructions
     add_recipe
+    update_ingredients
     add_ingredients
     add_rels
   end
@@ -156,12 +169,13 @@ class Access
     DB.execute "SELECT recipe_name FROM recipes"
   end
 
-  def self.alphabetical_index
+  def self.alph_index
     @recipes = DB.execute "SELECT recipe_name FROM recipes"
     puts @recipes.flatten.sort
   end
 
   def self.recipes_including(ingredient)
+    # change this from = to LIKE % to select anything related to the ingredient
     @ing_id = DB.execute "SELECT ing_id from ingredients WHERE ing=\"#{ingredient}\""
     @ing_id = @ing_id.join("")
     @recipe_ids = DB.execute "SELECT recipe_id FROM recipe_rel where ing_id=#{@ing_id}"
@@ -174,6 +188,7 @@ class Access
   end
 
 end
+
 
 =begin
 open ingredients table
