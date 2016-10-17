@@ -1,1 +1,1 @@
-This program stores recipe input into a single file. I will be adding a database connection to store data as well. 
+The basic Recipe CLI stores recipe information in a file and retrieves the latest recipe. The Recipe DB CLI stores recipe information in a SQLite database and returns recipes based on title or ingredients.

@@ -148,14 +148,14 @@ class GetRecipe
     end
   end
 
-  def fetch
+  def self.fetch
     get_recipe_input
     get_recipe_id
     get_instructions
     get_ingredients
   end
 
-  def display
+  def self.display
     puts @recipe_name
     puts @ingredient_list
     puts @instructions
@@ -166,7 +166,8 @@ end
 class Access
 
   def self.index
-    DB.execute "SELECT recipe_name FROM recipes"
+    index = DB.execute "SELECT recipe_name FROM recipes"
+    puts index.flatten
   end
 
   def self.alph_index

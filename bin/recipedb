@@ -3,9 +3,5 @@ require 'rubygems'
 require 'sqlite3'
 require_relative '../lib/recipe_db.rb'
 
-add = AddRecipe.new
-add.run
-
-get = GetRecipe.new
-get.fetch
-get.display
+AddRecipe.run
+GetRecipe.fetch.display
